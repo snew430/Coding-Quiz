@@ -36,11 +36,14 @@
   width: 100%;
 }
 
-  .timer {
+  #timer {
+    text-align: right;
+    font-weight: bolder;
+    padding:  10px 30px;
     flex: 1;
     /* border: 5px solid red; */
     width: 50%;
-    font-size: 5rem;
+    font-size: 7rem;
     color: var(--primary);
   }
 
@@ -48,7 +51,7 @@
     flex: 1;
     color: var(--primary);
     font-size: 5rem;
-    border: 5px solid red;
+    /* border: 5px solid red; */
     width: 50%;
     /* position: relative;
     left: 10px; */
@@ -58,7 +61,7 @@
     text-align: center;
     font-size: 3rem;
     text-decoration: underline;
-    border: 5px solid red;
+    /* border: 5px solid red; */
     padding: 10px;
   }
 
