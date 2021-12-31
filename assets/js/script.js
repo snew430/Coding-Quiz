@@ -2,34 +2,46 @@
 
 const quizTimer = document.querySelector("#timer");
 
-let timer = 100;
+// countdown(timer, quizTimer);
 
-var countdown = function (duration, display) {
-  var time = duration,
-    minutes,
-    seconds;
-  // milliseconds;
+let timer = 20;
 
-  setInterval(function () {
-    minutes = parseInt(time / 60, 10);
-    seconds = parseInt(time % 60, 10);
-
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    seconds = seconds < 10 ? "0" + seconds : seconds;
-
-    display.innerText = minutes + ":" + seconds;
-
-
-    if (--time < 0) {
-      time = duration;
-    }
-  }, 1000);
-
-  if (time === 0) {
+var countdownClock = setInterval(function () {
+  quizTimer.innerText = timer;
+  timer--;
+  if (timer < 0) {
     alert("YOU RAN OUT OF TIME");
     endGame();
   }
-};
+});
+
+// var countdownClock = function (time) {
+//   var countdown = setInterval(function () {
+//     minutes = parseInt(time / 60, 10);
+//     seconds = parseInt(time % 60, 10);
+
+//     minutes = minutes < 10 ? "0" + minutes : minutes;
+//     seconds = seconds < 10 ? "0" + seconds : seconds;
+
+//     quizTimer.innerText = minutes + ":" + seconds;
+
+//     time--;
+//     console.log(time)
+
+//     if (time < 0) {
+//       clearInterval(countdown);
+//       alert("YOU RAN OUT OF TIME");
+//       endGame();
+//     }
+//   }, 1000);
+
+// if (end === 0) {
+//   console.log("reached end of questions");
+//   console.log(countdown);
+//   clearInterval(countdown);
+//   endGame();
+// }
+// };
 
 //QUIZ FUNCTIONS BELOW
 
@@ -63,7 +75,7 @@ var questions = [
 
 var thisQuestionIndex = 0;
 
-var behindQuizBox = document.querySelector(".main-body")
+var behindQuizBox = document.querySelector(".main-body");
 var quizBox = document.querySelector(".quiz-box");
 
 var displayQuestion = document.createElement("div");
@@ -76,10 +88,9 @@ var userPoints = 0;
 
 // ========FUNCTION THAT PROVIDES THE NEXT QUESTION==========
 var nextQuestion = () => {
-
   // Deletes everything inside the quizbox
   displayQuestion.textContent = "";
-  while(displayAnswers.firstChild) {
+  while (displayAnswers.firstChild) {
     displayAnswers.removeChild(displayAnswers.firstChild);
   }
 
@@ -91,8 +102,7 @@ var nextQuestion = () => {
   // Add the question as a child to the quizbox
   quizBox.appendChild(displayQuestion);
 
-  var newAnswerOrder = shuffle(questions[thisQuestionIndex].Options)
-  console.log(newAnswerOrder)
+  var newAnswerOrder = shuffle(questions[thisQuestionIndex].Options);
 
   // Get and display the options
   newAnswerOrder.forEach((option, i) => {
@@ -109,20 +119,20 @@ var nextQuestion = () => {
 function answerClick() {
   if (this.textContent == questions[thisQuestionIndex].Correct) {
     userPoints += 10;
+    localStorage.setItem("currentscore", userPoints);
     console.log(userPoints, timer);
     // behindQuizBox.animate()
   } else {
-    timer -= 20;
+    timer -= 10;
     console.log(userPoints, timer);
   }
   thisQuestionIndex++;
   if (thisQuestionIndex === questions.length) {
-    endGame(userPoints);
+    endGame();
   } else {
     nextQuestion();
   }
 }
-
 
 // SHUFFLE AN ARRAY FUNCTION
 var shuffle = function (arr) {
@@ -136,23 +146,52 @@ var shuffle = function (arr) {
 };
 
 // END GAME FUNCTION
-var endGame = function (points) {
-
+var endGame = function () {
+  console.log(countdownClock, timer);
+  clearInterval(countdownClock);
+  // Remove all answers
   displayQuestion.textContent = "";
-  while(displayAnswers.firstChild) {
+  while (displayAnswers.firstChild) {
     displayAnswers.removeChild(displayAnswers.firstChild);
   }
 
-  displayQuestion.textContent = "You have finished the game!  You finished with " + points + " points!"
+  // Pull the high score
+  var highScore = localStorage.getItem("highscore");
+
+  // Pull current score
+  var currentScore = localStorage.getItem("currentscore");
+
+  // If there is no high score, set it to 0
+  if (highScore === null) {
+    highScore = 0;
+  }
+
+  // Display high score or not
+  if (currentScore > highScore) {
+    localStorage.setItem("highscore", currentScore);
+    displayQuestion.textContent =
+      "You now hold the high score!!!! You finished the game with " +
+      points +
+      " points!";
+  } else {
+    displayQuestion.textContent =
+      "You have finished the game!  Your final score was " +
+      currentScore +
+      " points!";
+  }
 };
 
 // START QUIZ FUNCTION
 function startQuiz() {
-  countdown(timer, quizTimer);
   userPoints = 0;
+  thisQuestionIndex = 0;
+  localStorage.setItem("currentscore", 0);
+  timer = 20;
+  // let timer = 20;
+  // var countdown = setInterval ()
+  countdownClock();
   nextQuestion();
 }
-
 var quizButton = document.querySelector("#start-button");
 
 quizButton.addEventListener("click", () => {
