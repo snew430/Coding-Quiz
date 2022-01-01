@@ -2,18 +2,19 @@
 
 const quizTimer = document.querySelector("#timer");
 
-// countdown(timer, quizTimer);
+let timer = 100;
 
-let timer = 20;
-
-var countdownClock = setInterval(function () {
-  quizTimer.innerText = timer;
-  timer--;
-  if (timer < 0) {
-    alert("YOU RAN OUT OF TIME");
-    endGame();
-  }
-});
+function countdownClock() {
+  setInterval(function () {
+    quizTimer.innerText = timer;
+    timer--;
+    console.log(timer);
+    if (timer < 0) {
+      clearInterval(countdownClock);
+      endGame();
+    }
+  }, 1000);
+}
 
 // var countdownClock = function (time) {
 //   var countdown = setInterval(function () {
@@ -45,31 +46,32 @@ var countdownClock = setInterval(function () {
 
 //QUIZ FUNCTIONS BELOW
 
+// ===============Quiz Questions=============
 var questions = [
   {
-    Question: "Question 1",
-    Options: ["Answer1", "Answer2", "This is the correct answer(3)", "Answer4"],
-    Correct: "This is the correct answer(3)",
+    Question: "What tag is used in all HTML documents and helps define your title?",
+    Options: ["<head></head>", "<header></header>", "<body></body>", "<main></main>"],
+    Correct: "<head></head>",
   },
   {
-    Question: "Question 2",
-    Options: ["Answer1", "This is the correct answer(2)", "Answer3", "Answer4"],
-    Correct: "This is the correct answer(2)",
+    Question: "What characteristic helps define ONE single element in HTML",
+    Options: ["Class", "ID", "JavaScript", "Title"],
+    Correct: "ID",
   },
   {
-    Question: "Question 3",
-    Options: ["This is the correct answer(1)", "Answer2", "Answer3", "Answer4"],
-    Correct: "This is the correct answer(1)",
+    Question: "What tag is used to properly reference your JavaScript file?",
+    Options: ["<sript>", "<link>", "<ref>", "<href>"],
+    Correct: "<script>",
   },
   {
-    Question: "Question 4",
-    Options: ["Answer1", "This is the correct answer(2)", "Answer3", "Answer4"],
-    Correct: "This is the correct answer(2)",
+    Question: "var x = 3, var y = 4, var z = y, y = x ....What does x equal?",
+    Options: ["3", "4", "undefined", "0"],
+    Correct: "3",
   },
   {
-    Question: "Question 5",
-    Options: ["Answer1", "Answer2", "Answer3", "This is the correct answer(4)"],
-    Correct: "This is the correct answer(4)",
+    Question: "What type of definition can help pass multiple values at once in JS?",
+    Options: ["Object", "Variable", "Function", "Interval"],
+    Correct: "Object",
   },
 ];
 
@@ -116,6 +118,7 @@ var nextQuestion = () => {
   });
 };
 
+// ===========Clicking an answer moves the quiz forward================
 function answerClick() {
   if (this.textContent == questions[thisQuestionIndex].Correct) {
     userPoints += 10;
@@ -134,7 +137,7 @@ function answerClick() {
   }
 }
 
-// SHUFFLE AN ARRAY FUNCTION
+// ==========SHUFFLE AN ARRAY FUNCTION============
 var shuffle = function (arr) {
   for (var i = 0; i < arr.length; i++) {
     var newOrder = Math.floor(Math.random() * arr.length);
@@ -145,10 +148,12 @@ var shuffle = function (arr) {
   return arr;
 };
 
-// END GAME FUNCTION
+// ==========END GAME FUNCTION=============
 var endGame = function () {
-  console.log(countdownClock, timer);
-  clearInterval(countdownClock);
+  timer = 0;
+  console.log(countdownClock(), timer);
+  // clearInterval(countdownClock());
+
   // Remove all answers
   displayQuestion.textContent = "";
   while (displayAnswers.firstChild) {
@@ -183,17 +188,20 @@ var endGame = function () {
 
 // START QUIZ FUNCTION
 function startQuiz() {
+  // Reset Points, questionindex, current score, and timer.
   userPoints = 0;
   thisQuestionIndex = 0;
   localStorage.setItem("currentscore", 0);
-  timer = 20;
-  // let timer = 20;
-  // var countdown = setInterval ()
+  timer = 100;
+
+  // Clock and quiz questions start
   countdownClock();
+  shuffle(questions);
   nextQuestion();
 }
 var quizButton = document.querySelector("#start-button");
 
+// Clicking the button starts the game
 quizButton.addEventListener("click", () => {
   startQuiz();
 });
