@@ -1,3 +1,22 @@
+var thisQuestionIndex = 0;
+
+// Used for animation
+var behindQuizBox = document.body;
+
+// Main quiz area
+var quizBox = document.querySelector(".quiz-box");
+
+var displayQuestion = document.createElement("div");
+displayQuestion.className = "question-container";
+
+var displayAnswers = document.createElement("div");
+displayAnswers.className = "answer-container";
+
+var userPoints = 0;
+
+var quizButton = document.querySelector("#start-button");
+
+
 // TIMER FUNCTIONS BELOW
 
 const quizTimer = document.querySelector("#timer");
@@ -6,13 +25,11 @@ let timer = 75;
 let interval;
 
 function countdownClock() {
+  // Uses a global variable so tthe endGame function can stop it
   interval = setInterval(function () {
-    console.log(timer);
     quizTimer.innerText = timer;
     timer--;
-    // console.log(timer);
     if (timer === 0) {
-      console.log(timer);
       alert("You ran out of time!");
       endGame();
     }
@@ -24,6 +41,7 @@ function countdownClock() {
 // ===============Quiz Questions=============
 var questions = [
   {
+    // Each question has a question, a list of possible answers, and the correct answer
     Question:
       "What tag is used in all HTML documents and helps define your title?",
     Options: [
@@ -89,19 +107,6 @@ var questions = [
   },
 ];
 
-var thisQuestionIndex = 0;
-
-var behindQuizBox = document.body;
-var quizBox = document.querySelector(".quiz-box");
-
-var displayQuestion = document.createElement("div");
-displayQuestion.className = "question-container";
-
-var displayAnswers = document.createElement("div");
-displayAnswers.className = "answer-container";
-
-var userPoints = 0;
-
 // ========FUNCTION THAT PROVIDES THE NEXT QUESTION==========
 var nextQuestion = () => {
   // Deletes everything inside the quizbox
@@ -134,15 +139,15 @@ var nextQuestion = () => {
 
 // ===========Clicking an answer moves the quiz forward================
 function answerClick() {
+  // Checks if the content of the button you pressed = the content of the correct answer
   if (this.textContent == questions[thisQuestionIndex].Correct) {
     userPoints += 10;
     animateCorrect();
     localStorage.setItem("currentscore", userPoints);
-    console.log(userPoints, timer);
   } else {
+    // If not, you lise time
     timer -= 10;
     animateWrong();
-    console.log(userPoints, timer);
   }
   thisQuestionIndex++;
   if (thisQuestionIndex === questions.length) {
@@ -211,8 +216,10 @@ var endGame = function () {
   }
 };
 
+// Fun animation for correct answer
 function animateCorrect() {
   var time = 5;
+  // Take a 5 second interval and change the background color back and forth
   setInterval(function () {
     if (time % 2 === 1) {
       behindQuizBox.setAttribute("style", "background-color:green");
@@ -221,7 +228,6 @@ function animateCorrect() {
     }
     if (time === 0) {
       behindQuizBox.setAttribute("style", "background-color:#ececec");
-      console.log("none and done");
       clearInterval();
     }
     time--;
@@ -238,7 +244,6 @@ function animateWrong() {
     }
     if (time === 0) {
       behindQuizBox.setAttribute("style", "background-color:#ececec");
-      console.log("none and done");
       clearInterval();
     }
     time--;
@@ -255,10 +260,10 @@ function startQuiz() {
 
   // Clock and quiz questions start
   countdownClock();
+  // shuffle the question order
   shuffle(questions);
   nextQuestion();
 }
-var quizButton = document.querySelector("#start-button");
 
 // Clicking the button starts the game
 quizButton.addEventListener("click", () => {
