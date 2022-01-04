@@ -2,55 +2,36 @@
 
 const quizTimer = document.querySelector("#timer");
 
-let timer = 100;
+let timer = 75;
+let interval;
 
 function countdownClock() {
-  setInterval(function () {
+  interval = setInterval(function () {
+    console.log(timer);
     quizTimer.innerText = timer;
     timer--;
-    console.log(timer);
-    if (timer < 0) {
-      clearInterval(countdownClock);
+    // console.log(timer);
+    if (timer === 0) {
+      console.log(timer);
+      alert("You ran out of time!");
       endGame();
     }
   }, 1000);
 }
-
-// var countdownClock = function (time) {
-//   var countdown = setInterval(function () {
-//     minutes = parseInt(time / 60, 10);
-//     seconds = parseInt(time % 60, 10);
-
-//     minutes = minutes < 10 ? "0" + minutes : minutes;
-//     seconds = seconds < 10 ? "0" + seconds : seconds;
-
-//     quizTimer.innerText = minutes + ":" + seconds;
-
-//     time--;
-//     console.log(time)
-
-//     if (time < 0) {
-//       clearInterval(countdown);
-//       alert("YOU RAN OUT OF TIME");
-//       endGame();
-//     }
-//   }, 1000);
-
-// if (end === 0) {
-//   console.log("reached end of questions");
-//   console.log(countdown);
-//   clearInterval(countdown);
-//   endGame();
-// }
-// };
 
 //QUIZ FUNCTIONS BELOW
 
 // ===============Quiz Questions=============
 var questions = [
   {
-    Question: "What tag is used in all HTML documents and helps define your title?",
-    Options: ["<head></head>", "<header></header>", "<body></body>", "<main></main>"],
+    Question:
+      "What tag is used in all HTML documents and helps define your title?",
+    Options: [
+      "<head></head>",
+      "<header></header>",
+      "<body></body>",
+      "<main></main>",
+    ],
     Correct: "<head></head>",
   },
   {
@@ -60,7 +41,7 @@ var questions = [
   },
   {
     Question: "What tag is used to properly reference your JavaScript file?",
-    Options: ["<sript>", "<link>", "<ref>", "<href>"],
+    Options: ["<script>", "<link>", "<ref>", "<href>"],
     Correct: "<script>",
   },
   {
@@ -69,15 +50,48 @@ var questions = [
     Correct: "3",
   },
   {
-    Question: "What type of definition can help pass multiple values at once in JS?",
-    Options: ["Object", "Variable", "Function", "Interval"],
-    Correct: "Object",
+    Question: "What is the definition of an 'Algorithm'",
+    Options: [
+      "A process or set of rules to be followed in calculations or other problem-solving operations",
+      "An expression used for creating statements that are either TRUE or FALSE",
+      "Lists or groups of similar types of data values that are grouped",
+      "A location that stores temporary data within a program which can be modified, store and display whenever need",
+    ],
+    Correct:
+      "A process or set of rules to be followed in calculations or other problem-solving operations",
+  },
+  {
+    Question:
+      "Which of the following would be used to properly recall a 'Class' in CSS or JavaScript",
+    Options: ["#clockface", "@clockface", ".clockface", "*clockface"],
+    Correct: ".clockface",
+  },
+  {
+    Question: "What does HTML stand for?",
+    Options: [
+      "HyperText Markup Language",
+      "HyperText Madeup Literature",
+      "Honorary Text Markup Literature",
+      "HomeoText Markup Language",
+    ],
+    Correct: "HyperText Markup Language",
+  },
+  {
+    Question:
+      "What is the proper order in your terminal to get your code to your GitHub?",
+    Options: [
+      "git add, git commit, git push",
+      "git pull, git commit, git add",
+      "git status, git add, git pull",
+      "git pull, git add, git push",
+    ],
+    Correct: "git add, git commit, git push",
   },
 ];
 
 var thisQuestionIndex = 0;
 
-var behindQuizBox = document.querySelector(".main-body");
+var behindQuizBox = document.body;
 var quizBox = document.querySelector(".quiz-box");
 
 var displayQuestion = document.createElement("div");
@@ -122,11 +136,12 @@ var nextQuestion = () => {
 function answerClick() {
   if (this.textContent == questions[thisQuestionIndex].Correct) {
     userPoints += 10;
+    animateCorrect();
     localStorage.setItem("currentscore", userPoints);
     console.log(userPoints, timer);
-    // behindQuizBox.animate()
   } else {
     timer -= 10;
+    animateWrong();
     console.log(userPoints, timer);
   }
   thisQuestionIndex++;
@@ -150,9 +165,9 @@ var shuffle = function (arr) {
 
 // ==========END GAME FUNCTION=============
 var endGame = function () {
-  timer = 0;
-  console.log(countdownClock(), timer);
-  // clearInterval(countdownClock());
+  clearInterval(interval);
+
+  quizTimer.innerText = "GAME OVER";
 
   // Remove all answers
   displayQuestion.textContent = "";
@@ -162,6 +177,9 @@ var endGame = function () {
 
   // Pull the high score
   var highScore = localStorage.getItem("highscore");
+
+  // Pull high score initials
+  var hsinitials = localStorage.getItem("name");
 
   // Pull current score
   var currentScore = localStorage.getItem("currentscore");
@@ -173,18 +191,59 @@ var endGame = function () {
 
   // Display high score or not
   if (currentScore > highScore) {
+    var initials = prompt("Please enter your initials");
     localStorage.setItem("highscore", currentScore);
+    localStorage.setItem("name", initials);
     displayQuestion.textContent =
-      "You now hold the high score!!!! You finished the game with " +
-      points +
+      "Congratulations " +
+      initials +
+      "!!! You now hold the high score!!!! You finished the game with " +
+      currentScore +
       " points!";
   } else {
     displayQuestion.textContent =
       "You have finished the game!  Your final score was " +
       currentScore +
-      " points!";
+      " points! Study harder to beat " +
+      hsinitials +
+      "'s score of " +
+      highScore;
   }
 };
+
+function animateCorrect() {
+  var time = 5;
+  setInterval(function () {
+    if (time % 2 === 1) {
+      behindQuizBox.setAttribute("style", "background-color:green");
+    } else if (time % 2 === 0) {
+      behindQuizBox.setAttribute("style", "background-color:#ececec");
+    }
+    if (time === 0) {
+      behindQuizBox.setAttribute("style", "background-color:#ececec");
+      console.log("none and done");
+      clearInterval();
+    }
+    time--;
+  }, 100);
+}
+
+function animateWrong() {
+  var time = 5;
+  setInterval(function () {
+    if (time % 2 === 1) {
+      behindQuizBox.setAttribute("style", "background-color:red");
+    } else if (time % 2 === 0) {
+      behindQuizBox.setAttribute("style", "background-color:#ececec");
+    }
+    if (time === 0) {
+      behindQuizBox.setAttribute("style", "background-color:#ececec");
+      console.log("none and done");
+      clearInterval();
+    }
+    time--;
+  }, 100);
+}
 
 // START QUIZ FUNCTION
 function startQuiz() {
@@ -192,7 +251,7 @@ function startQuiz() {
   userPoints = 0;
   thisQuestionIndex = 0;
   localStorage.setItem("currentscore", 0);
-  timer = 100;
+  timer = 75;
 
   // Clock and quiz questions start
   countdownClock();
