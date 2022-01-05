@@ -141,6 +141,10 @@ main {
   background: var(--primary);
 }
 
+.hide {
+  display: none;
+}
+
 /* ====QUESTION AREA ENDS==== */
 
 /* ====FOOTER BEGINS==== */

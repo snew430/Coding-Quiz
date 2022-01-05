@@ -12,10 +12,9 @@ displayQuestion.className = "question-container";
 var displayAnswers = document.createElement("div");
 displayAnswers.className = "answer-container";
 
-var userPoints = 0;
+var highScoresList = document.createElement("ol");
 
 var quizButton = document.querySelector("#start-button");
-
 
 // TIMER FUNCTIONS BELOW
 
@@ -23,6 +22,7 @@ const quizTimer = document.querySelector("#timer");
 
 let timer = 75;
 let interval;
+var currentScore;
 
 function countdownClock() {
   // Uses a global variable so tthe endGame function can stop it
@@ -141,9 +141,10 @@ var nextQuestion = () => {
 function answerClick() {
   // Checks if the content of the button you pressed = the content of the correct answer
   if (this.textContent == questions[thisQuestionIndex].Correct) {
-    userPoints += 10;
+    // userPoints += 10;
+    currentScore += 10;
     animateCorrect();
-    localStorage.setItem("currentscore", userPoints);
+    // localStorage.setItem("currentscore", userPoints);
   } else {
     // If not, you lise time
     timer -= 10;
@@ -156,65 +157,6 @@ function answerClick() {
     nextQuestion();
   }
 }
-
-// ==========SHUFFLE AN ARRAY FUNCTION============
-var shuffle = function (arr) {
-  for (var i = 0; i < arr.length; i++) {
-    var newOrder = Math.floor(Math.random() * arr.length);
-    var temp = arr[i];
-    arr[i] = arr[newOrder];
-    arr[newOrder] = temp;
-  }
-  return arr;
-};
-
-// ==========END GAME FUNCTION=============
-var endGame = function () {
-  clearInterval(interval);
-
-  quizTimer.innerText = "GAME OVER";
-
-  // Remove all answers
-  displayQuestion.textContent = "";
-  while (displayAnswers.firstChild) {
-    displayAnswers.removeChild(displayAnswers.firstChild);
-  }
-
-  // Pull the high score
-  var highScore = localStorage.getItem("highscore");
-
-  // Pull high score initials
-  var hsinitials = localStorage.getItem("name");
-
-  // Pull current score
-  var currentScore = localStorage.getItem("currentscore");
-
-  // If there is no high score, set it to 0
-  if (highScore === null) {
-    highScore = 0;
-  }
-
-  // Display high score or not
-  if (currentScore > highScore) {
-    var initials = prompt("Please enter your initials");
-    localStorage.setItem("highscore", currentScore);
-    localStorage.setItem("name", initials);
-    displayQuestion.textContent =
-      "Congratulations " +
-      initials +
-      "!!! You now hold the high score!!!! You finished the game with " +
-      currentScore +
-      " points!";
-  } else {
-    displayQuestion.textContent =
-      "You have finished the game!  Your final score was " +
-      currentScore +
-      " points! Study harder to beat " +
-      hsinitials +
-      "'s score of " +
-      highScore;
-  }
-};
 
 // Fun animation for correct answer
 function animateCorrect() {
@@ -250,12 +192,85 @@ function animateWrong() {
   }, 100);
 }
 
+// ==========SHUFFLE AN ARRAY FUNCTION============
+var shuffle = function (arr) {
+  for (var i = 0; i < arr.length; i++) {
+    var newOrder = Math.floor(Math.random() * arr.length);
+    var temp = arr[i];
+    arr[i] = arr[newOrder];
+    arr[newOrder] = temp;
+  }
+  return arr;
+};
+
+// =========HIGH SCORE FUNCTION========
+function showScores() {
+  // Reset the Ordered List
+  highScoresList.innerHTML = "";
+
+  // Get the current players info and log it
+  var currentInit = prompt("Please enter initials");
+  var userScores = {
+    initials: currentInit,
+    score: currentScore,
+  };
+
+  // Pull the previous high scores
+  var scores = JSON.parse(localStorage.getItem("highscore")) || [];
+
+  // Add the curent player to the mix....
+  scores.push(userScores);
+
+  // And sort in order
+  scores.sort(function (a, b) {
+    return b.score - a.score;
+  });
+
+  // Render and display the top 6 players
+  scores.forEach(function (score) {
+    var listScore = document.createElement("li");
+    listScore.setAttribute(
+      "style",
+      "color:#5b5dca; font-size:2rem; margin:5px"
+    );
+    listScore.textContent = score.initials + " >>>>>> " + score.score;
+    highScoresList.appendChild(listScore);
+  });
+  displayQuestion.textContent = "HIGH SCORES";
+  displayAnswers.appendChild(highScoresList);
+
+  // Save the top 5 scores
+  var highScores = [];
+
+  for (i = 0; i < 5; i++) {
+    highScores.push(scores[i]);
+  }
+
+  localStorage.setItem("highscore", JSON.stringify(highScores));
+}
+
+// ==========END GAME FUNCTION=============
+var endGame = function () {
+  clearInterval(interval);
+
+  quizTimer.innerText = "GAME OVER";
+
+  // Remove all answers
+  displayQuestion.textContent = "";
+  while (displayAnswers.firstChild) {
+    displayAnswers.removeChild(displayAnswers.firstChild);
+  }
+
+  showScores();
+};
+
 // START QUIZ FUNCTION
 function startQuiz() {
   // Reset Points, questionindex, current score, and timer.
   userPoints = 0;
   thisQuestionIndex = 0;
-  localStorage.setItem("currentscore", 0);
+  // localStorage.setItem("currentscore", 0);
+  currentScore = 0;
   timer = 75;
 
   // Clock and quiz questions start
