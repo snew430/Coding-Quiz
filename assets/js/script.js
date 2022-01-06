@@ -29,7 +29,7 @@ function countdownClock() {
   interval = setInterval(function () {
     quizTimer.innerText = timer;
     timer--;
-    if (timer === 0) {
+    if (timer < 0) {
       alert("You ran out of time!");
       endGame();
     }
