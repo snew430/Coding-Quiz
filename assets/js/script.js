@@ -221,13 +221,15 @@ function showScores() {
   // Add the curent player to the mix....
   scores.push(userScores);
 
+  console.log(scores)
+
   // And sort in order
-  scores.sort(function (a, b) {
+  var newScoreList = scores.sort(function (a, b) {
     return b.score - a.score;
   });
 
   // Render and display the top 6 players
-  scores.forEach(function (score) {
+  newScoreList.forEach(function (score) {
     var listScore = document.createElement("li");
     listScore.setAttribute(
       "style",
@@ -236,13 +238,19 @@ function showScores() {
     listScore.textContent = score.initials + " >>>>>> " + score.score;
     highScoresList.appendChild(listScore);
   });
+  console.log(highScoresList)
   displayQuestion.textContent = "HIGH SCORES";
   displayAnswers.appendChild(highScoresList);
 
   // Save the top 5 scores
   var highScores = [];
+  var maxScores = scores.length
 
-  for (i = 0; i < 5; i++) {
+  if (maxScores > 5){
+    maxScores = 5
+  }
+
+  for (i = 0; i < maxScores; i++) {
     highScores.push(scores[i]);
   }
 
